@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backdoors & Breaches — Security Incident Analysis Framework</title>
+<style>
+:root{--tp:#1a1a1a;--ts:#555;--tt:#999;--bp:#fff;--bs:#f7f6f3;--bd:rgba(0,0,0,0.12);--rm:8px;--rl:12px;--fn:system-ui,-apple-system,sans-serif}
+@media(prefers-color-scheme:dark){
+:root{--tp:#e8e6df;--ts:#a8a69e;--tt:#666;--bp:#1c1c1a;--bs:#252523;--bd:rgba(255,255,255,0.1)}
+.tag-inv{background:#0c2d4a!important;color:#85b7eb!important}.tag-con{background:#04241a!important;color:#5dcaa5!important}
+.tag-era{background:#2d1a00!important;color:#ef9f27!important}.tag-com{background:#1a1640!important;color:#afa9ec!important}
+.tag-suc{background:#172a06!important;color:#97c459!important}.tag-fail{background:#2d0a0a!important;color:#f09595!important}
+.tag-none{background:#252523!important;color:#666!important}.tag-tech{background:#2d1a00!important;color:#ef9f27!important}
+.tag-fin{background:#2d0a0a!important;color:#f09595!important}.tag-pol{background:#1a1640!important;color:#afa9ec!important}
+.tag-per{background:#04241a!important;color:#5dcaa5!important}.s-entry{background:#0c2d4a!important;color:#85b7eb!important}
+.s-move{background:#1a1640!important;color:#afa9ec!important}.s-c2{background:#2d1a00!important;color:#ef9f27!important}
+.s-pers{background:#04241a!important;color:#5dcaa5!important}
+.src-game-con{background:#172a06!important;color:#97c459!important}.src-game-start{background:#0c2d4a!important;color:#85b7eb!important}
+.src-inc-cards{background:#0c2d4a!important;color:#85b7eb!important}.src-proc-log{background:#2d1a00!important;color:#ef9f27!important}
+.src-ir-seq{background:#1a1640!important;color:#afa9ec!important}.src-suc{background:#172a06!important;color:#97c459!important}
+.src-fail{background:#2d0a0a!important;color:#f09595!important}.src-undis{background:#252523!important;color:#a8a69e!important;border-color:rgba(255,255,255,0.1)!important}
+.src-proc-suc{background:#172a06!important;color:#97c459!important}
+.play-row.act-investigate{background:#0a1e2d!important}.play-row.act-contain{background:#041a0f!important}
+.play-row.act-eradicate{background:#1e1200!important}.play-row.act-communicate{background:#120f2a!important}
+.play-row.touched{background:#252523!important}
+select,input[type=text]{background:#1c1c1a!important;color:#e8e6df!important}
+blockquote{background:#0a1e2d!important;border-left-color:#378add!important}
+blockquote p{color:#85b7eb!important}
+h2.sh{border-bottom-color:rgba(255,255,255,0.15)!important}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--fn);background:var(--bp);color:var(--tp);padding:2.5rem 2rem;max-width:1100px;margin:0 auto}
+.hero{border-bottom:0.5px solid var(--bd);padding-bottom:1.5rem;margin-bottom:2rem}
+.hero h1{font-size:22px;font-weight:500;margin-bottom:6px}
+.hero p{font-size:13px;color:var(--ts);line-height:1.6}
+h2.sh{font-size:17px;font-weight:500;margin:2rem 0 0.75rem;padding-bottom:6px;border-bottom:0.5px solid var(--bd)}
+h3.subh{font-size:14px;font-weight:500;margin:1.25rem 0 0.5rem}
+.pr p{font-size:14px;color:var(--ts);line-height:1.7;margin-bottom:0.75rem}
+.pr ul{padding-left:1.25rem;margin-bottom:0.75rem}
+.pr li{font-size:14px;color:var(--ts);line-height:1.7;margin-bottom:0.4rem}
+.pr li strong,.pr p strong{color:var(--tp);font-weight:500}
+.pr em{font-style:italic;color:var(--tt)}
+blockquote{background:#EBF3FB;border-left:3px solid #378add;border-radius:0 var(--rm) var(--rm) 0;padding:10px 14px;margin:0.75rem 0}
+blockquote p{font-size:13px;color:#0C447C;margin:0;line-height:1.55;font-weight:500}
+.fmla{background:var(--bs);border:0.5px solid var(--bd);border-radius:var(--rm);padding:10px 14px;margin:0.75rem 0;font-size:14px;font-weight:500;color:var(--tp);text-align:center}
+.div{height:0.5px;background:var(--bd);margin:1.5rem 0}
+table.mdt{width:100%;border-collapse:collapse;font-size:13px;margin:0.75rem 0}
+table.mdt th{background:var(--bs);padding:8px 12px;text-align:left;font-weight:500;border:0.5px solid var(--bd)}
+table.mdt td{padding:8px 12px;border:0.5px solid var(--bd);color:var(--ts)}
+.slbl{font-size:11px;font-weight:500;color:var(--tt);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px}
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+.acard{border:0.5px solid var(--bd);border-radius:var(--rm);padding:12px 14px;background:var(--bs)}
+.atop{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.aname{font-size:13px;font-weight:500;color:var(--tp)}
+.adesc{font-size:12px;color:var(--ts);margin-bottom:4px}
+.aeg{font-size:11px;color:var(--tt);font-style:italic}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+.sc{border:0.5px solid var(--bd);border-radius:0 var(--rm) var(--rm) 0;padding:10px 12px}
+.sc.s1{border-left:3px solid #378add}.sc.s2{border-left:3px solid #7f77dd}
+.sc.s3{border-left:3px solid #ba7517}.sc.s4{border-left:3px solid #1d9e75}
+.snum{font-size:10px;font-weight:500;color:var(--tt);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:3px}
+.sname{font-size:13px;font-weight:500;color:var(--tp);margin-bottom:2px}
+.salt{font-size:11px;color:var(--ts);margin-bottom:3px}
+.smitre{font-size:10px;color:var(--tt);font-style:italic}
+.lgd{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;align-items:center}
+.ll{font-size:11px;color:var(--tt)}
+.tag{font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;display:inline-block;white-space:nowrap}
+.tag-inv{background:#E6F1FB;color:#0C447C}.tag-con{background:#E1F5EE;color:#085041}
+.tag-era{background:#FAEEDA;color:#633806}.tag-com{background:#EEEDFE;color:#3C3489}
+.tag-suc{background:#EAF3DE;color:#27500A}.tag-fail{background:#FCEBEB;color:#501313}
+.tag-none{background:var(--bs);color:var(--tt);border:0.5px solid var(--bd)}
+.tag-tech{background:#FAEEDA;color:#633806}.tag-fin{background:#FCEBEB;color:#501313}
+.tag-pol{background:#EEEDFE;color:#3C3489}.tag-per{background:#E1F5EE;color:#085041}
+.s-entry{background:#E6F1FB;color:#0C447C}.s-move{background:#EEEDFE;color:#3C3489}
+.s-c2{background:#FAEEDA;color:#633806}.s-pers{background:#E1F5EE;color:#085041}
+.lgsw{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.25rem}
+.sw{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ts)}
+.swb{width:14px;height:14px;border-radius:0 3px 3px 0;flex-shrink:0}
+.tw{border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:1rem}
+table.lt{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+table.lt thead tr{background:var(--bs);border-bottom:0.5px solid var(--bd)}
+table.lt th{padding:8px 8px;text-align:left;font-size:11px;font-weight:500;color:var(--ts);white-space:nowrap;overflow:hidden}
+table.lt tbody tr{border-bottom:0.5px solid var(--bd);transition:background 0.12s}
+table.lt tbody tr:last-child{border-bottom:none}
+table.lt td{padding:7px 8px;color:var(--ts);vertical-align:middle}
+table.lt td.proc{color:var(--tp);font-weight:500}
+.esh td{background:#1F4E79;color:#fff;font-size:11px;font-weight:500;padding:6px 10px;letter-spacing:0.04em}
+.esh td span{font-size:10px;font-weight:400;opacity:0.7;margin-left:8px}
+.er{background:var(--bs);opacity:0.78}
+.er td{font-size:11px}
+.psh td{background:#085041;color:#fff;font-size:11px;font-weight:500;padding:6px 10px;letter-spacing:0.04em}
+.psh td span{font-size:10px;font-weight:400;opacity:0.7;margin-left:8px}
+.pr2{background:var(--bp)}
+.pr2.act-investigate{background:#EDF5FD;border-left:3px solid #378add}
+.pr2.act-contain{background:#EAF6F1;border-left:3px solid #1d9e75}
+.pr2.act-eradicate{background:#FDF5E8;border-left:3px solid #ba7517}
+.pr2.act-communicate{background:#F2F0FD;border-left:3px solid #7f77dd}
+.pr2.touched{background:var(--bs)}
+select,input[type=text]{font-size:11px;color:var(--tp);background:var(--bp);border:0.5px solid var(--bd);border-radius:4px;padding:3px 5px;width:100%;outline:none;font-family:var(--fn)}
+select:focus,input[type=text]:focus{border-color:#378add}
+.sr{background:var(--bs)}.sr td{font-size:11px;color:var(--tt);font-style:italic;padding:8px}
+.nt{font-size:11px;color:var(--ts);line-height:1.5}
+.cl{color:#27500A;font-size:12px}.cm{color:#633806;font-size:12px}.ch{color:#501313;font-size:12px}
+.ab{margin-top:8px;font-size:11px;color:var(--ts);background:var(--bs);border:0.5px solid var(--bd);border-radius:var(--rm);padding:6px 14px;cursor:pointer}
+.ab:hover{background:var(--bp)}
+.pt{border:0.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-top:1.5rem}
+.ph{background:var(--bs);padding:9px 16px;border-bottom:0.5px solid var(--bd);font-size:12px;font-weight:500;color:var(--ts)}
+.pg{display:grid;grid-template-columns:1fr 1fr 1fr}
+.pi{padding:12px 14px;border-right:0.5px solid var(--bd);border-bottom:0.5px solid var(--bd)}
+.pi:nth-child(3n){border-right:none}
+.pi:nth-child(4),.pi:nth-child(5),.pi:nth-child(6){border-bottom:none}
+.psec{font-size:12px;font-weight:500;color:var(--tp);margin-bottom:4px}
+.ptxt{font-size:11px;color:var(--ts);line-height:1.55}
+.stags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.stag{font-size:10px;font-weight:500;padding:1px 7px;border-radius:3px}
+.src-game-con{background:#EAF3DE;color:#27500A}.src-game-start{background:#E6F1FB;color:#0C447C}
+.src-inc-cards{background:#E6F1FB;color:#0C447C}.src-proc-log{background:#FAEEDA;color:#633806}
+.src-ir-seq{background:#EEEDFE;color:#3C3489}.src-suc{background:#EAF3DE;color:#27500A}
+.src-fail{background:#FCEBEB;color:#501313}.src-undis{background:var(--bs);color:var(--tt);border:0.5px solid var(--bd)}
+.src-proc-suc{background:#EAF3DE;color:#27500A}
+.ft{font-size:11px;color:var(--tt);line-height:1.65;margin-top:1rem}
+.ft strong{color:var(--ts);font-weight:500}
+@media(max-width:700px){body{padding:1rem}.agrid,.sgrid,.pg{grid-template-columns:1fr}.pi{border-right:none!important}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Backdoors &amp; Breaches — Security Incident Analysis Framework</h1>
+  <p>A structured methodology mapping gamified tabletop simulation directly to the Security Incident Analysis Worksheet.</p>
+</div>
+
+<div class="pr">
+<h2 class="sh">Goal Statement</h2>
+<p>The objective of this framework is to bridge the gap between gamified tabletop simulation and structured academic and professional incident analysis. By mapping each stage of a <strong>Backdoors &amp; Breaches</strong> tabletop exercise directly to the corresponding sections of the <strong>Security Incident Analysis Worksheet</strong>, we create a learning pathway that transforms gameplay into a rigorous, reusable analytical output.</p>
+<p>The tabletop exercise is not treated as a standalone activity. Every element of the game — the incident cards, procedure cards, successes, failures, undiscovered attack stages, and time spent across IR phases — is deliberately mapped to a worksheet section, ensuring that analysts and students leave the exercise with a partially or fully completed incident analysis rather than just an experiential memory of the session.</p>
+<div class="div"></div>
+<h2 class="sh">Understanding the Game — The Core Formula</h2>
+<p><em>Each incident card represents a stage in the attack chain, not just an isolated event — it represents a progression of adversary objectives.</em></p>
+<div class="fmla">Threat Source + Threat Event → Adversary Action (TTP) → Observable Impact = Tactic Achieved</div>
+<p>Each incident card encodes all four elements of this formula simultaneously — who the threat source is, what threat event occurred, which TTP was employed, and what observable impact resulted. A successful procedure card does more than confirm detection — it validates that a specific adversary objective was being executed at that stage, telling the analyst how far the attacker had progressed through the attack chain and what was already compromised at that point.</p>
+<h3 class="subh">How the Game Structures the Attack Chain</h3>
+<p>Rather than mapping to all 14 MITRE ATT&amp;CK tactic stages, Backdoors &amp; Breaches intentionally condenses the attack lifecycle into four high-level stages:</p>
+<ul>
+  <li><strong>Entry</strong> — Initial Compromise</li>
+  <li><strong>Movement</strong> — Pivot &amp; Escalate</li>
+  <li><strong>Data Theft</strong> — C2 &amp; Exfiltration</li>
+  <li><strong>Staying Hidden</strong> — Persistence</li>
+</ul>
+<p>This simplification is deliberate. It makes gameplay manageable, keeps decision-making clear, teaches detection thinking without overwhelming players, and still maps closely to the full MITRE ATT&amp;CK framework. Every incident card revealed during play can be immediately placed within one of these four stages, and that placement tells the analyst where in the adversary's progression the team currently is, which directly informs what containment or eradication actions are most urgent next.</p>
+<h3 class="subh">Documenting the Reveal</h3>
+<p>When you document a revealed incident card in the worksheet, you are recording all four confirmed elements at once: who was responsible (<strong>Threat Source</strong>), what happened at that stage (<strong>Threat Event</strong>), how the adversary executed it (<strong>TTP</strong>), and what evidence your detection capability surfaced (<strong>Observable Impact</strong>). After the reveal, uncertainty collapses across all four dimensions simultaneously — the analyst has a confirmed origin, a confirmed action, a confirmed technique, and confirmed evidence, establishing exactly how far the attacker had progressed. This is precisely what Section 8 (Vulnerabilities and Techniques) and Section 12 (Lessons Learned) require — a fully attributed, stage-confirmed entry in the attack chain that connects directly to MITRE ATT&amp;CK reasoning and the BCDR gap analysis that follows.</p>
+<div class="div"></div>
+<h2 class="sh">The Incident Captain's Role</h2>
+<p>The Incident Captain plays a central role in this framework. Rather than hosting a generic tabletop, the Captain designs each campaign with deliberate intent — anchoring the scenario to a <strong>known threat actor profile</strong> and the <strong>Cyber Threat Intelligence (CTI) profile</strong> of the organization being simulated. This tests whether analysts are versed in the TTPs, tooling, and behavioral patterns of threat actors relevant to their organization, and surfaces gaps in detection maturity, response readiness, and threat intelligence awareness that would otherwise remain invisible until a real incident occurs. The +3 bonus procedures are pre-assigned by the Captain accordingly, rewarding analytical prioritization rooted in threat intelligence rather than guesswork. At the conclusion of the session, the Captain obtains structured feedback on where the team filled gaps effectively and where critical blind spots remain — making every session a deliberate <strong>gap analysis instrument</strong>.</p>
+<div class="div"></div>
+<h2 class="sh">The Worksheet as the Analytical Backbone</h2>
+<p>The Security Incident Analysis Worksheet serves as the structured output of the entire exercise. It is populated progressively through gameplay, with each game element feeding a specific section:</p>
+<ul>
+  <li><strong>Section 2 — Incident Description</strong> is derived from the <strong>Game Conclusion</strong>. The Game Conclusion is the only point in the exercise where the complete attack story is revealed — making it the authoritative source for a fully attributed incident description.</li>
+  <li><strong>Section 3 — Direct Impacts (BIA Lens)</strong> is informed by the <strong>Game Start scenario</strong> and the <strong>incident cards</strong>. Each stage is mapped to its corresponding critical function disruption, cascading downstream effects, and the RTOs and RPOs that were implicitly violated.</li>
+  <li><strong>Section 5 — Incident Timeline</strong> is reconstructed from the <strong>chronological sequence of incident cards</strong>, cross-referenced against the <strong>Procedure Log</strong>. Gaps between occurrence and detection become detection lag annotations, each paired with a BCDR gap assessment.</li>
+  <li><strong>Section 8 — Vulnerabilities and Techniques</strong> is populated from <strong>incident cards and successful procedure narratives</strong>. Each incident card encodes the specific TTP and maps directly to a MITRE ATT&amp;CK technique ID.</li>
+  <li><strong>Section 9 — Incident Resolution</strong> is evaluated through the <strong>sequence of procedure cards played</strong> and their IR phases. Critically, this section assesses whether containment and recovery actions were executed in a <strong>forensically sound manner</strong> — specifically whether chain of custody was maintained and whether the speed of recovery may have compromised the legal admissibility of digital evidence.</li>
+  <li><strong>Section 12 — Lessons Learned</strong> is the synthesis of everything the game produced: procedure successes, procedure failures by category, undiscovered attack stages, time lost across IR phases, and the <strong>Legal and Ethical Challenges in Cyber Forensics</strong> dimension — addressing chain of custody, legal admissibility, privacy obligations, ethical tensions between containment speed and evidence preservation, law enforcement engagement, and regulatory disclosure.</li>
+</ul>
+<div class="div"></div>
+<h2 class="sh">The Integrated Disciplines</h2>
+<p>The framework integrates the following interconnected disciplines across the worksheet, each of which is explicitly demonstrated through gameplay rather than assumed:</p>
+<ul>
+  <li><strong>Business Impact Analysis (BIA)</strong> — mapping critical functions disrupted at each stage of the attack chain to downstream operational, financial, and reputational consequences</li>
+  <li><strong>Contingency Planning</strong> — assessed through procedure failures and undiscovered attack stages, revealing gaps in incident playbooks, rollback procedures, shutdown triggers, and activation criteria</li>
+  <li><strong>BCDR</strong> — evaluated through the resolution of IR phases, alternate processing, failover capabilities, and whether RTOs and RPOs were implicitly met or violated. BCDR is a subset of contingency planning</li>
+  <li><strong>ISCP Activation and Notification Phase</strong> — tested through the sequence and timeliness of procedure card selection and whether the team escalated appropriately within a timeframe a mature ISCP would prescribe</li>
+  <li><strong>ISCP Recovery Phase and the 5 Rs</strong> — reflected in how systems were prioritized for restoration and whether regional readiness, response, resiliency, recovery, and reconstitution principles were applied</li>
+  <li><strong>Human Controls and SETA</strong> — surfaced through Personnel-category procedure failures revealing analyst training gaps, fatigue, and missed threat intelligence connections</li>
+  <li><strong>Legal and Ethical Challenges in Cyber Forensics</strong> — chain of custody, legal admissibility, privacy obligations, ethical tensions between rapid containment and evidence preservation, law enforcement engagement, and regulatory disclosure</li>
+  <li><strong>Lessons Learned</strong> — synthesized from procedure successes, failures by category, undiscovered attack stages, time lost across IR phases, and legal and forensic gap analysis</li>
+</ul>
+<div class="div"></div>
+<h2 class="sh">The Procedure Log as the Bridge</h2>
+<p>The Procedure Log is the real-time recording instrument that sits at the center of this framework, bridging the tabletop exercise and the Security Incident Analysis Worksheet. Every procedure card played is logged here during gameplay. After the session, this log becomes the primary source material for populating Section 2 (Incident Description via Game Conclusion), Section 3 (Direct Impacts via Game Start and incident cards), Section 5 (Incident Timeline), Section 8 (Vulnerabilities and Techniques), Section 9 (Incident Resolution), and Section 12 (Lessons Learned) simultaneously. Undiscovered attack stages — rows in the log with no attack stage revealed — become the most significant lessons learned entries, representing structural gaps in monitoring, logging, or tooling that no analyst skill could have compensated for during play.</p>
+<h3 class="subh">Action Cards and IR Phase Mapping</h3>
+<p>The action cards are not chosen at random — every procedure selection should reflect deliberate prioritization, not guesswork. Each card type maps directly to a real-world IR phase, and the sequence in which they are played is as analytically significant as which cards are played. This phase is about decision convergence under uncertainty:</p>
+<table class="mdt">
+  <thead><tr><th>Game Action</th><th>Real-world Meaning</th><th>Real IR Phase</th></tr></thead>
+  <tbody>
+    <tr><td>Investigate</td><td>Gather evidence</td><td>Detection &amp; Analysis</td></tr>
+    <tr><td>Contain</td><td>Stop the attack from spreading</td><td>Containment</td></tr>
+    <tr><td>Eradicate</td><td>Remove the threat</td><td>Eradication</td></tr>
+    <tr><td>Communicate</td><td>Inform stakeholders</td><td>Coordination / Business Response</td></tr>
+  </tbody>
+</table>
+<h3 class="subh">On the +3 Bonus</h3>
+<p>The +3 bonus is pre-assigned by the Incident Captain before the game starts, based on the campaign design. It identifies the procedure cards most statistically likely to reveal part of the attack chain for that specific scenario. Players do not know which procedures carry the bonus until they play them — this is an intentional mechanic that rewards analytical prioritization rather than random selection. The +3 is not a standalone analytical category and requires no separate entry in Section 12. Its value to the worksheet is already captured under Procedure Successes and Failures — a +3 procedure that succeeded is documented under successes, one that failed is documented under failures with a root cause category.</p>
+<h3 class="subh">Chronological IR Phase Ordering</h3>
+<p>When selecting procedure cards, the goal is to broadly respect the chronological order of IR phases — Detection and Analysis, Containment, Eradication, Recovery. The important principle is not rigid sequential execution but rather that no phase should be skipped entirely or bypassed prematurely. In practice, Detection and Analysis often run in parallel with early Containment actions — that is acceptable and realistic. What the game is specifically designed to surface is the cost of jumping to Containment or Eradication before sufficient investigation has occurred. Acting too early wastes time, may contaminate evidence, and can cause the threat actor to go quiet rather than be fully eradicated. The +3 bonus procedures should therefore be evaluated not only for their likelihood of revealing an incident card but for where they fall in the IR phase timeline — a high-value procedure played out of sequence still carries a cost.</p>
+<p>This does not mean a single investigative procedure is limited to revealing only the earliest stage of the attack — a well-chosen procedure card played during the Detection phase can surface incident cards spanning multiple stages of the attack chain simultaneously.</p>
+<h3 class="subh">Procedure Cards and Attack Chain Coverage</h3>
+<p>A single procedure card can reveal more than one incident card depending on the scope of its investigative reach. For example, in an insider threat scenario, endpoint analysis may reveal not only the insider threat event itself but also adjacent events such as a new privileged user being added — both of which are part of the threat actor's broader strategy and overall action on objectives. Procedure cards with this wider coverage across the attack chain are the ones most deserving of the +3 designation, and the Incident Captain assigns the bonus accordingly. This is why procedure card selection should never be treated as an isolated decision — each card played should be evaluated for what it might reveal across the full attack chain, not just the immediate next step.</p>
+<h3 class="subh">Threat Intelligence as an Incident Captain Tool</h3>
+<p>The Incident Captain can deliberately design the campaign around a known threat actor profile — one the organization has previously encountered or that is relevant to their industry. By doing so, the Captain introduces a hidden test: how many players are versed in that threat actor's known TTPs, tooling, and behavioral patterns, and how well do they understand the threat intelligence profile of the organization they are defending?
+Players who draw on that threat intelligence knowledge will naturally prioritize the procedure cards most likely to uncover multiple linked stages of the attack chain in a single play — and those are precisely the procedures the Captain has pre-assigned the +3 bonus to. The correlation between threat actor knowledge and procedure card effectiveness becomes visible through gameplay, and the degree to which players recognize or miss that connection feeds directly into the lessons learned section as a measurable assessment of analyst readiness against known threat actor profiles.</p>
+<h3 class="subh">Correlation to Time and Lessons Learned</h3>
+<p>The sequence of procedure cards played and whether they were played in a broadly optimal order can all be used to assess how efficiently the incident was handled. Time spent across IR phases becomes a measurable output feeding the lessons learned section across three specific dimensions: <strong>detection maturity</strong>, <strong>response readiness</strong>, and <strong>analyst familiarity with the threat actor profile</strong>.</p>
+<p>Critically, time lost is not always a personnel or training failure. Each procedure failure should be categorized by its root cause — <strong>Technical, Financial, Political, or Personnel</strong> — because the category determines the remediation path.</p>
+<p>Finally, any attack stage that no procedure uncovered during the game represents the most significant lessons learned finding of all — not af failed attempt, but a complete absence of detection capability. These undiscovered stages reveal structural gaps in monitoring, logging, or tooling that no amount of analyst skill could have compensated for, and they feed directly into the BCDR and contingency planning gap analysis in Section 12.</p>
+</div>
+
+<div class="div"></div>
+
+<!-- ═══════════ INTERACTIVE PROCEDURE LOG ═══════════ -->
+<p style="font-size:13px;font-weight:500;color:var(--tp);margin-bottom:4px">Procedure Log — Backdoors &amp; Breaches</p>
+<p style="font-size:12px;color:var(--ts);margin-bottom:1.5rem;line-height:1.6">Record every procedure card played during the tabletop exercise in real time. After the session this log feeds directly into Sections 2, 3, 5, 8, 9, and 12 of the Security Incident Analysis Worksheet simultaneously.</p>
+<p class="slbl">Action card → IR phase mapping</p>
+<div class="agrid">
+  <div class="acard"><div class="atop"><span class="aname">Investigate</span><span class="tag tag-inv">Detection &amp; Analysis</span></div><div class="adesc">Gather evidence — understand what happened</div><div class="aeg">Check logs, review EDR alerts, inspect IP, query SIEM</div></div>
+  <div class="acard"><div class="atop"><span class="aname">Contain</span><span class="tag tag-con">Containment</span></div><div class="adesc">Stop the attack from spreading</div><div class="aeg">Isolate endpoint, disable account, block IP, kill session</div></div>
+  <div class="acard"><div class="atop"><span class="aname">Eradicate</span><span class="tag tag-era">Eradication</span></div><div class="adesc">Remove the threat from the environment</div><div class="aeg">Remove malware, reset credentials, patch vulnerability</div></div>
+  <div class="acard"><div class="atop"><span class="aname">Communicate</span><span class="tag tag-com">Coordination</span></div><div class="adesc">Inform stakeholders — business response</div><div class="aeg">Notify management, escalate to legal, prepare comms</div></div>
+</div>
+<p style="font-size:12px;color:var(--ts);margin-bottom:1.5rem;line-height:1.6">No phase should be bypassed entirely before sufficient investigation has occurred. Detection and Analysis may run in parallel with early Containment — but a high-value procedure played out of sequence still carries a time cost.</p>
+<div class="div"></div>
+<p class="slbl">Attack chain stages — condensed attacker lifecycle</p>
+<div class="sgrid">
+  <div class="sc s1"><div class="snum">Stage 1</div><div class="sname">Entry</div><div class="salt">≈ Initial Compromise</div><div class="smitre">MITRE: Initial Access, Execution</div></div>
+  <div class="sc s2"><div class="snum">Stage 2</div><div class="sname">Movement</div><div class="salt">≈ Pivot &amp; Escalate</div><div class="smitre">MITRE: Lateral Movement, Privilege Escalation</div></div>
+  <div class="sc s3"><div class="snum">Stage 3</div><div class="sname">C2 &amp; Exfil</div><div class="salt">Command, Control &amp; Exfiltration</div><div class="smitre">MITRE: C2, Collection, Exfiltration</div></div>
+  <div class="sc s4"><div class="snum">Stage 4</div><div class="sname">Persistence</div><div class="salt">Staying Hidden</div><div class="smitre">MITRE: Persistence, Defense Evasion</div></div>
+</div>
+<p style="font-size:11px;color:var(--tt);margin-bottom:1.5rem;line-height:1.5;font-style:italic">A single procedure card may reveal incident cards across multiple stages simultaneously. Note all revealed stages in the card(s) revealed column.</p>
+<div class="div"></div>
+<div class="lgd">
+  <span class="ll">Failure:</span>
+  <span class="tag tag-tech">Technical</span><span class="tag tag-fin">Financial</span><span class="tag tag-pol">Political</span><span class="tag tag-per">Personnel</span>
+  <span style="margin-left:8px" class="ll">Stages:</span>
+  <span class="tag s-entry">Entry</span><span class="tag s-move">Movement</span><span class="tag s-c2">C2 &amp; Exfil</span><span class="tag s-pers">Persistence</span>
+</div>
+<div class="lgsw" style="margin-top:8px">
+  <span class="ll" style="margin-right:2px">Row highlights:</span>
+  <span class="sw"><span class="swb" style="background:#EDF5FD;border-left:3px solid #378add"></span>Investigate</span>
+  <span class="sw"><span class="swb" style="background:#EAF6F1;border-left:3px solid #1d9e75"></span>Contain</span>
+  <span class="sw"><span class="swb" style="background:#FDF5E8;border-left:3px solid #ba7517"></span>Eradicate</span>
+  <span class="sw"><span class="swb" style="background:#F2F0FD;border-left:3px solid #7f77dd"></span>Communicate</span>
+</div>
+<div class="tw" style="margin-top:1rem">
+  <table class="lt">
+    <colgroup><col style="width:4%"><col style="width:13%"><col style="width:11%"><col style="width:12%"><col style="width:11%"><col style="width:9%"><col style="width:12%"><col style="width:10%"><col style="width:6%"><col style="width:14%"></colgroup>
+    <thead><tr><th>#</th><th>Procedure card</th><th>Action type</th><th>IR phase</th><th>Stage targeted</th><th>Outcome</th><th>Card(s) revealed</th><th>Failure category</th><th>Time cost</th><th>Notes / CTI used?</th></tr></thead>
+    <tbody>
+      <tr class="esh"><td colspan="10">Examples — reference only <span>these rows show how a completed entry looks</span></td></tr>
+      <tr class="er"><td style="font-size:10px;color:var(--tt);font-style:italic">eg1</td><td class="proc">Firewall log review</td><td><span class="tag tag-inv">Investigate</span></td><td style="font-size:11px">Detection &amp; Analysis</td><td><span class="tag s-entry">Entry</span></td><td><span class="tag tag-suc">✓ Success</span></td><td style="font-size:11px;color:var(--tp)">Initial Compromise</td><td><span class="tag tag-none">—</span></td><td class="cl">Low</td><td class="nt">BLACKCAT C2 profile informed selection. +3 card</td></tr>
+      <tr class="er"><td style="font-size:10px;color:var(--tt);font-style:italic">eg2</td><td class="proc">Endpoint analysis</td><td><span class="tag tag-inv">Investigate</span></td><td style="font-size:11px">Detection &amp; Analysis</td><td><span class="tag s-entry">Entry</span></td><td><span class="tag tag-suc">✓ Success</span></td><td style="font-size:11px;color:var(--tp)">Entry + Persistence <span style="color:var(--tt);font-size:10px">(multi-stage)</span></td><td><span class="tag tag-none">—</span></td><td class="cm">Medium</td><td class="nt">+3 card. New privileged user added alongside initial compromise</td></tr>
+      <tr class="er"><td style="font-size:10px;color:var(--tt);font-style:italic">eg3</td><td class="proc">UEBA analysis</td><td><span class="tag tag-inv">Investigate</span></td><td style="font-size:11px">Detection &amp; Analysis</td><td><span class="tag s-move">Movement</span></td><td><span class="tag tag-fail">✗ Failed</span></td><td style="font-size:11px;color:var(--tt)">None revealed</td><td><span class="tag tag-tech">Technical</span></td><td class="cm">Medium</td><td class="nt">Agent not deployed on affected subnet</td></tr>
+      <tr class="er"><td style="font-size:10px;color:var(--tt);font-style:italic">eg4</td><td class="proc">Network isolation</td><td><span class="tag tag-con">Contain</span></td><td style="font-size:11px">Containment</td><td><span class="tag s-move">Movement</span></td><td><span class="tag tag-fail">✗ Failed</span></td><td style="font-size:11px;color:var(--tt)">None revealed</td><td><span class="tag tag-pol">Political</span></td><td class="ch">High</td><td class="nt">VP blocked isolation — change board required. 2 IR rounds lost</td></tr>
+      <tr class="er"><td style="font-size:10px;color:var(--tt);font-style:italic">eg5</td><td class="proc">DLP / data audit</td><td><span class="tag tag-inv">Investigate</span></td><td style="font-size:11px">Detection &amp; Analysis</td><td><span class="tag s-c2">C2 &amp; Exfil</span></td><td><span class="tag tag-fail">✗ Failed</span></td><td style="font-size:11px;color:var(--tt)">None revealed</td><td><span class="tag tag-fin">Financial</span></td><td class="ch">High</td><td class="nt">DLP license not renewed → Sec 12 detection gap</td></tr>
+    </tbody>
+    <tbody><tr class="psh"><td colspan="10">Your session — fill in below <span>rows highlight automatically as you select action type</span></td></tr></tbody>
+    <tbody id="play-rows"></tbody>
+    <tbody><tr class="sr"><td colspan="5">After game: rows with no card revealed = undiscovered attack stages → Section 12 detection gap entries</td><td colspan="5">All rows feed → Sec 2 · Sec 3 · Sec 5 (timeline) · Sec 8 (TTPs) · Sec 9 (resolution) · Sec 12 (lessons learned)</td></tr></tbody>
+  </table>
+</div>
+<button class="ab" onclick="addRow()">+ Add procedure row</button>
+<div class="pt">
+  <div class="ph">Post-game analysis — what the log feeds into each worksheet section</div>
+  <div class="pg">
+    <div class="pi"><div class="stags"><span class="stag src-game-con">Game Conclusion</span></div><div class="psec">Section 2 — Incident Description</div><div class="ptxt">The Incident Captain's end-of-game narrative reveals the complete attack story. The Game Conclusion is the only point where the full story is confirmed — the authoritative source for a fully attributed incident description.</div></div>
+    <div class="pi"><div class="stags"><span class="stag src-game-start">Game Start</span><span class="stag src-inc-cards">Incident Cards</span></div><div class="psec">Section 3 — Direct Impacts (BIA Lens)</div><div class="ptxt">The Game Start establishes the first observable impact. Each incident card adds a stage of business impact. Together they map cascading downstream effects and the RTOs and RPOs implicitly violated — feeding the BIA analysis this section requires.</div></div>
+    <div class="pi"><div class="stags"><span class="stag src-inc-cards">Incident Cards</span><span class="stag src-proc-log">Procedure Log</span></div><div class="psec">Section 5 — Incident Timeline</div><div class="ptxt">Arrange revealed cards chronologically. Each card = one confirmed stage. Rows with no reveal = detection lag. Each timeline entry is paired with a BCDR gap assessment from the corresponding procedure outcome.</div></div>
+    <div class="pi"><div class="stags"><span class="stag src-inc-cards">Incident Cards</span><span class="stag src-proc-suc">Procedure Successes</span></div><div class="psec">Section 8 — Vulnerabilities &amp; Techniques</div><div class="ptxt">Each incident card encodes the TTP employed and maps to a MITRE ATT&amp;CK technique ID. Successful procedure reveals provide the observable evidence that substantiates each technique — a fully attributed, technique-level account.</div></div>
+    <div class="pi"><div class="stags"><span class="stag src-proc-log">Procedure Log</span><span class="stag src-ir-seq">IR Phase Sequence</span></div><div class="psec">Section 9 — Incident Resolution</div><div class="ptxt">The sequence of action types is assessed against the DR/ISCP lens — whether phases were followed optimally, whether forensic chain of custody was maintained before restoration, and whether containment speed may have compromised legal admissibility of evidence.</div></div>
+    <div class="pi"><div class="stags"><span class="stag src-suc">Successes</span><span class="stag src-fail">Failures</span><span class="stag src-undis">Undiscovered</span></div><div class="psec">Section 12 — Lessons Learned</div><div class="ptxt">Procedure successes = controls that worked. Failures by category (Technical / Financial / Political / Personnel) = planning gaps. Undiscovered stages = complete detection gaps. Time lost, threat intelligence gaps, and legal and forensic considerations all feed here.</div></div>
+  </div>
+</div>
+<div class="ft" style="margin-top:1rem">
+  <strong>Time cost guide:</strong> Low = single focused action &nbsp;·&nbsp; Medium = cross-team effort or tool analysis required &nbsp;·&nbsp; High = significant IR rounds consumed, especially costly if phase was premature<br>
+  <strong>Failure categories:</strong> Technical = tooling/config failure &nbsp;·&nbsp; Financial = budget or license gap &nbsp;·&nbsp; Political = approval barrier &nbsp;·&nbsp; Personnel = training gap, fatigue, missing expertise
+</div>
+
+<div class="div"></div>
+
+<!-- OUTCOME -->
+<div class="pr">
+<h2 class="sh">The Outcome</h2>
+<p>Analysts and students leave each session with a completed or substantially populated Security Incident Analysis Worksheet that connects simulated gameplay directly to real-world BCDR, contingency planning, BIA, cyber forensics, and threat-informed defense principles. The Incident Captain leaves with a structured picture of team capability, threat intelligence awareness, forensic readiness, and organizational gap areas that informs future training priorities. Each session is repeatable, scalable across different incident types and threat actor profiles, and directly aligned with the analytical standards expected in both academic and professional incident response contexts. What began as a card game becomes a <strong>structured, intelligence-driven gap analysis instrument</strong> — one that produces professional-grade analytical outputs from every tabletop session conducted.</p>
+</div>
+
+<script>
+let rc=0;
+const im={investigate:'Detection & Analysis',contain:'Containment',eradicate:'Eradication',communicate:'Coordination / Business Response'};
+const ac={investigate:'act-investigate',contain:'act-contain',eradicate:'act-eradicate',communicate:'act-communicate'};
+function updateRow(n){
+  const tr=document.getElementById('r'+n),act=document.getElementById('a'+n).value,ph=document.getElementById('p'+n);
+  tr.className='pr2';
+  if(act&&ac[act]){tr.classList.add(ac[act]);ph.textContent=im[act];ph.style.fontStyle='normal';ph.style.color='var(--tp)';}
+  else{tr.classList.add('touched');ph.textContent='auto-filled';ph.style.fontStyle='italic';ph.style.color='var(--tt)';}
+}
+function mt(n){const tr=document.getElementById('r'+n);if(!document.getElementById('a'+n).value)tr.classList.add('touched');}
+function addRow(){
+  rc++;const tb=document.getElementById('play-rows');const tr=document.createElement('tr');
+  tr.id='r'+rc;tr.className='pr2';tr.style.borderBottom='0.5px solid var(--bd)';
+  tr.innerHTML=`<td style="font-size:12px;color:var(--tt);font-weight:500">${rc}</td>
+    <td><input type="text" placeholder="procedure name" oninput="mt(${rc})"></td>
+    <td><select id="a${rc}" onchange="updateRow(${rc})"><option value="">— select —</option><option value="investigate">Investigate</option><option value="contain">Contain</option><option value="eradicate">Eradicate</option><option value="communicate">Communicate</option></select></td>
+    <td><span id="p${rc}" style="font-size:11px;color:var(--tt);font-style:italic">auto-filled</span></td>
+    <td><select onchange="mt(${rc})"><option value="">— select —</option><option>Entry (Initial Compromise)</option><option>Movement (Pivot &amp; Escalate)</option><option>C2 &amp; Exfil</option><option>Persistence</option></select></td>
+    <td><select onchange="mt(${rc})"><option value="">— select —</option><option>✓ Success</option><option>✗ Failed</option></select></td>
+    <td><input type="text" placeholder="card(s) revealed or none" oninput="mt(${rc})"></td>
+    <td><select onchange="mt(${rc})"><option value="">—</option><option>Technical</option><option>Financial</option><option>Political</option><option>Personnel</option></select></td>
+    <td><select onchange="mt(${rc})"><option value="">—</option><option>Low</option><option>Medium</option><option>High</option></select></td>
+    <td><input type="text" placeholder="notes / CTI used?" oninput="mt(${rc})"></td>`;
+  tb.appendChild(tr);
+}
+for(let i=0;i<4;i++)addRow();
+</script>
+</body>
+</html>
